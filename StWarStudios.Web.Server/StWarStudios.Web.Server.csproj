@@ -40,7 +40,7 @@
 		<Exec WorkingDirectory="web-client" Command="npm install" />
 
 		<!-- Genera build de producción -->
-		<Exec WorkingDirectory="web-client" Command="npm run build-production" />
+		<Exec WorkingDirectory="web-client" Command="npm run build" />
 
 	</Target>
 
