@@ -52,6 +52,10 @@ jobs:
           fi 
           echo "Version: ${{ steps.set_version.outputs.version }}" > ./public/version.txt 
           echo "Build: ${{ github.run_number }}" >> ./public/version.txt      
+      - name: Copy React build to .NET wwwroot
+        run: |
+          mkdir -p ./StWarStudios.Web.Server/wwwroot  # Crear el directorio wwwroot si no existe
+          cp -R ./StWarStudios.Web.Server/web-client/build/* ./StWarStudios.Web.Server/wwwroot/  # Copiar el build de React a wwwroot
 
       - name: Verify directory structure
         run: |
