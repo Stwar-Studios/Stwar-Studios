@@ -26,7 +26,7 @@ public class Program
 
         string reactAppOrigin = "https://localhost:5173";
         string reactAppOriginQA = "https://qa-stwarstudios.azurewebsites.net";
-        string reactAppOriginProd = "https://stwarstudios.com:5000";
+        string reactAppOriginProd = "https://stwarstudios.com:8080";
         string reactAppOriginQASite = "https://stwarstudios.azurewebsites.net";
 
         builder.Services.AddCors(options =>
@@ -44,7 +44,12 @@ public class Program
             });
         });
 
-        
+        var port = Environment.GetEnvironmentVariable("PORT");
+
+        if (!string.IsNullOrEmpty(port) && envRelease == "PROD")
+        {
+            builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+        }
         var app = builder.Build();
         using (var scope = app.Services.CreateScope())
         {

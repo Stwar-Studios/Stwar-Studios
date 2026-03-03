@@ -21,7 +21,16 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '18'    
-
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+          
+      - name: Build React project
+        run: |
+          cd ./StWarStudios.Web.Server/web-client
+          npm install  # install dependencies
+          npm run build  # Compile project on PROD   
       - name: Set version
         id: set_version
         run: |
