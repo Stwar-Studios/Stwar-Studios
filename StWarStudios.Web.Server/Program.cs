@@ -33,21 +33,14 @@ public class Program
         {
             options.AddPolicy("AllowReactApp", policy =>
             {
-                policy.WithOrigins(reactAppOrigin)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-
-                policy.WithOrigins(reactAppOriginQA)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-
-                policy.WithOrigins(reactAppOriginProd)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-
-                policy.WithOrigins(reactAppOriginQASite)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();                    
+                policy.WithOrigins(
+                    reactAppOrigin,
+                    reactAppOriginQA,
+                    reactAppOriginProd,
+                    reactAppOriginQASite
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
             });
         });
 
@@ -69,24 +62,22 @@ public class Program
         }
         app.UseMiddleware<CorsLoggingMiddleware>();
         app.UseMiddleware<ExceptionHandlingMiddleware>();
+        app.UseHttpsRedirection();
         app.UseDefaultFiles();
         app.UseStaticFiles();
-
+        app.UseRouting();
+        app.UseCors("AllowReactApp");
         // Configure the HTTP request pipeline.
         if (envRelease == "QA")
         {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-        app.UseRouting();
+        
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
-        app.UseCors("AllowReactApp");           
-
         app.MapControllers();
-
-        app.MapFallbackToFile("/index.html");
+        app.MapFallbackToFile("index.html");
 
         app.Run();
     }

@@ -30,4 +30,28 @@
     <ProjectReference Include="..\StWarStudios.Data\StWarStudios.Data.csproj" />
   </ItemGroup>
 
+	<!-- ============================= -->
+	<!-- 🔥 BUILD AUTOMÁTICO DE REACT -->
+	<!-- ============================= -->
+
+	<Target Name="BuildReact" BeforeTargets="Publish">
+
+		<!-- Instala dependencias -->
+		<Exec WorkingDirectory="web-client" Command="npm install" />
+
+		<!-- Genera build de producción -->
+		<Exec WorkingDirectory="web-client" Command="npm run build-production" />
+
+	</Target>
+
+	<Target Name="CopyReactBuild" AfterTargets="BuildReact">
+
+		<!-- Toma SOLO el contenido del build -->
+		<ItemGroup>
+			<ReactFiles Include="web-client\build\**\*" />
+		</ItemGroup>
+
+		<!-- Copia encima de wwwroot SIN borrar -->
+		<Copy SourceFiles="@(ReactFiles)" DestinationFiles="@(ReactFiles->'$(ProjectDir)wwwroot\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+	</Target>
 </Project>
