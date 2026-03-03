@@ -17,6 +17,49 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+          
+      - name: Build React project
+        run: |
+          cd ./StWarStudios.Web.Server/web-client
+          npm install  # install dependencies
+          npm run build-qa  # Compile project on QA   
+
+      - name: Set version
+        id: set_version
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "version=${{ github.run_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Version File
+        run: |
+          cd ./StWarStudios.Web.Server/web-client
+          mkdir -p ./public
+          if [ -f ./public/version.txt ]; then 
+            rm ./public/version.txt 
+          else 
+            echo "Creating version.txt file" 
+            touch ./public/version.txt 
+          fi 
+          echo "Version: ${{ steps.set_version.outputs.version }}" > ./public/version.txt 
+          echo "Build: ${{ github.run_number }}" >> ./public/version.txt
+
+      - name: Copy React build to .NET wwwroot
+        run: |
+          mkdir -p ./StWarStudios.Web.Server/wwwroot  # Crear el directorio wwwroot si no existe
+          rm -rf ./StWarStudios.Web.Server/wwwroot/*  # Limpiar archivos existentes en wwwroot
+          cp -R ./StWarStudios.Web.Server/web-client/build/* ./StWarStudios.Web.Server/wwwroot/  # Copiar el build de React a wwwroot
+
+      - name: Verify directory structure
+        run: |
+          echo "Listing contents of StWarStudios.Web.Server:"
+          ls -R ./StWarStudios.Web.Server/wwwroot  # Listar todos los archivos y carpetas en StWarStudios.Web.Server      
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
